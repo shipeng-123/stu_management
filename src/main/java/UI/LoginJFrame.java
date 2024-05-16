@@ -17,8 +17,7 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
     JTextField username_text = new JTextField();
     JPasswordField password_text = new JPasswordField();
     JTextField CAPTCHA_text = new JTextField();
-    String CAPTCHA_str = "";
-    JButton CAPTCHA_button = new JButton(CAPTCHA_str);
+    JButton CAPTCHA_button = new JButton();
     String current_login_img_path = "登录按钮.png";
     String login_img_path = "src/main/resources/Img/Login/";;
     JButton login_Btn = new JButton(new ImageIcon(login_img_path + current_login_img_path));
@@ -26,6 +25,7 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
     String current_password_img = "显示密码.png";
     JButton visible_password_btn = new JButton(new ImageIcon(visible_password_img_path + current_password_img));
     private final Code code= new Code();
+    private Menu_JFrame menu= new Menu_JFrame() ;//菜单
     public LoginJFrame() {
         //初始化界面
         init_LoginJFrame();
@@ -136,11 +136,12 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
                 // 刷新验证码
                 init_CAPTCHA_str();
             } else if (username.equals(admin) && password.equals(admin_password)) {
-                // new GameJFrame();
+                menu.setVisible(true);
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "用户名或密码错误");
             }
+
         }
     }
 
