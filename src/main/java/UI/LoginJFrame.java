@@ -1,12 +1,13 @@
 package UI;
 
+import Tool.Code;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-
 public class LoginJFrame extends JFrame implements ActionListener, MouseListener {
     String admin = "admin";
     String admin_password = "123456";
@@ -19,13 +20,12 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
     String CAPTCHA_str = "";
     JButton CAPTCHA_button = new JButton(CAPTCHA_str);
     String current_login_img_path = "登录按钮.png";
-    String login_img_path = "src/main/resources/Img/Login/";//src\main\resources\Img\Login\登录按钮.png
+    String login_img_path = "src/main/resources/Img/Login/";;
     JButton login_Btn = new JButton(new ImageIcon(login_img_path + current_login_img_path));
-    String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     String visible_password_img_path = "src/main/resources/Img/Login/";
     String current_password_img = "显示密码.png";
     JButton visible_password_btn = new JButton(new ImageIcon(visible_password_img_path + current_password_img));
-
+    private final Code code= new Code();
     public LoginJFrame() {
         //初始化界面
         init_LoginJFrame();
@@ -36,6 +36,7 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
 
     private void login_CSS() {
         //设置输入标签样式
+
         username_text.setBounds(200, 120, 200, 30);
         username_text.setFont(new Font("宋体", Font.BOLD, 20));
         this.getContentPane().add(username_text);
@@ -68,6 +69,7 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
         CAPTCHA_button.setFont(new Font("宋体", Font.BOLD, 20));
         CAPTCHA_button.setForeground(new Color(178, 139, 63));
         CAPTCHA_button.setBackground(new Color(255, 255, 255));
+        CAPTCHA_button.setIcon(new ImageIcon(code.codeImage())); // 设置初始验证码图片
         CAPTCHA_button.setBorderPainted(false); // 不绘制边框
         CAPTCHA_button.setContentAreaFilled(false); // 不显示背景（透明）
         CAPTCHA_button.setFocusPainted(false); // 不绘制焦点状态下的边框
@@ -89,6 +91,9 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
         visible_password_btn.addMouseListener(this);
         this.getContentPane().add(visible_password_btn);
 
+        JLabel bg = new JLabel(new ImageIcon("src/main/resources/image/login/background.png"));
+        bg.setBounds(0, 0, 470, 390);
+        this.getContentPane().add(bg);
     }
 
     private void init_in_last() {
@@ -124,34 +129,27 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
             // 检查用户名或密码是否为空
             if (username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "用户名或密码不能为空");
-                init_CAPTCHA_str();
             } else if (CAPTCHA.isEmpty()) { // 检查验证码是否为空
                 JOptionPane.showMessageDialog(this, "请输入验证码");
-                init_CAPTCHA_str();
-            } else if (!CAPTCHA.equalsIgnoreCase(CAPTCHA_str)) { // 检查验证码是否正确(忽略大小写)
+            } else if (!code.verify(CAPTCHA)) { // 检查验证码是否正确
                 JOptionPane.showMessageDialog(this, "验证码错误");
-                //刷新验证码
+                // 刷新验证码
                 init_CAPTCHA_str();
             } else if (username.equals(admin) && password.equals(admin_password)) {
-//                new GameJFrame();
+                // new GameJFrame();
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "用户名或密码错误");
-                init_CAPTCHA_str();
             }
         }
-
-
     }
+
+
 
     private void init_CAPTCHA_str() {
-        CAPTCHA_str = "";
-        for (int i = 0; i < 4; i++) {
-            int index = (int) (Math.random() * characters.length());
-            CAPTCHA_str += characters.charAt(index);
-        }
-        CAPTCHA_button.setText(CAPTCHA_str);
+        CAPTCHA_button.setIcon(new ImageIcon(code.newCodeImage()));
     }
+
 
     @Override
     public void mouseClicked(MouseEvent e) {
