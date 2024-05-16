@@ -1,16 +1,27 @@
 package UI;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import sql.DBConfig;
 
 public class ADD_Stu extends JPanel implements ActionListener {
     private final JTextField jtf_stuNum, jtf_stuName, jtf_stuBirthday, jtf_stuAge, jtf_stuDorm;
-    private final JButton jb_enter, jb_reset;
+    private final JButton jb_enter, jb_reset, jb_addImage;
     private final JRadioButton jrb_man, jrb_woman;
     private final JComboBox<String> jcb_stuMajor;
-
+    private final JLabel jl_image;
+    private ImageIcon imageIcon;
     public ADD_Stu() {
         setLayout(null);
         this.setSize(526, 461);
@@ -112,14 +123,31 @@ public class ADD_Stu extends JPanel implements ActionListener {
         jcb_stuMajor.setBounds(145, 320, 211, 41);
         this.add(jcb_stuMajor);
 
+        // 图片框
+        jl_image = new JLabel();
+        jl_image.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        jl_image.setBounds(400, 70, 100, 100);
+        this.add(jl_image);
+
+        // 添加图片按钮
+        jb_addImage = new JButton("添加图片");
+        jb_addImage.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        jb_addImage.setBounds(400, 180, 100, 41);
+        this.add(jb_addImage);
+
         jb_enter.addActionListener(this);
         jb_reset.addActionListener(this);
+        jb_addImage.addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb_reset) {
             reset();
+        } else if (e.getSource() == jb_addImage) {
+            addImage();
+        } else if (e.getSource() == jb_enter) {
+            insertStudentInfo();
         }
     }
 
@@ -131,7 +159,68 @@ public class ADD_Stu extends JPanel implements ActionListener {
         jtf_stuName.setText("");
         jtf_stuBirthday.setText("");
         jcb_stuMajor.setSelectedIndex(0);
+        jl_image.setIcon(null);
         jtf_stuNum.requestFocus();
+    }
+
+    public void addImage() {
+        JFileChooser fileChooser = new JFileChooser();
+        int returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            imageIcon = new ImageIcon(selectedFile.getAbsolutePath());
+            // 这里可以根据需要调整图片的尺寸
+            Image img = imageIcon.getImage();
+            Image newImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageIcon = new ImageIcon(newImg);
+            jl_image.setIcon(imageIcon);
+        }
+    }
+
+    private void insertStudentInfo() {
+        String studentId = jtf_stuNum.getText();
+        String name = jtf_stuName.getText();
+        String gender = jrb_man.isSelected() ? "男" : "女";
+        String birthdate = jtf_stuBirthday.getText();
+        int age = Integer.parseInt(jtf_stuAge.getText());
+        String major = (String) jcb_stuMajor.getSelectedItem();
+        String dormitory = jtf_stuDorm.getText();
+        byte[] avatar = imageIcon != null ? imageToBytes(imageIcon.getImage()) : null;
+
+        try (Connection conn = DBConfig.getConnection()) {
+            String sql = "INSERT INTO students (student_id, name, gender, birthdate, age, major, dormitory, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, studentId);
+            pstmt.setString(2, name);
+            pstmt.setString(3, gender);
+            pstmt.setDate(4, java.sql.Date.valueOf(birthdate));
+            pstmt.setInt(5, age);
+            pstmt.setString(6, major);
+            pstmt.setString(7, dormitory);
+            pstmt.setBytes(8, avatar);
+            pstmt.executeUpdate();
+            JOptionPane.showMessageDialog(this, "学生信息已成功添加！");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "添加学生信息失败！");
+        }
+    }
+
+    // 将Image转换为字节数组的方法
+    private byte[] imageToBytes(Image image) {
+        BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = bufferedImage.createGraphics();
+        g2.drawImage(image, 0, 0, null);
+        g2.dispose();
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bufferedImage, "jpg", baos);
+            return baos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static void main(String[] args) {
