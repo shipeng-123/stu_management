@@ -195,12 +195,4 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
         jtf_display_dormitory.setText("");
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("保存学生图片");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 600);
-        frame.setLocationRelativeTo(null); // 居中显示
-        frame.setContentPane(new Download_Stu_Image());
-        frame.setVisible(true);
-    }
 }

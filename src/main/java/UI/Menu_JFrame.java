@@ -94,10 +94,5 @@ public class Menu_JFrame extends JFrame implements ActionListener {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Menu_JFrame menu = new Menu_JFrame();
-            menu.setVisible(true);
-        });
-    }
+
 }

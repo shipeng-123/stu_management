@@ -250,11 +250,5 @@ public class ADD_Stu extends JPanel implements ActionListener {
         }
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("学生信息管理系统");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 500);
-        frame.setContentPane(new ADD_Stu());
-        frame.setVisible(true);
-    }
+
 }

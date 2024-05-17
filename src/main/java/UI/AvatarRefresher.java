@@ -51,9 +51,5 @@ public class AvatarRefresher {
         }
     }
 
-    public static void main(String[] args) {
-        AvatarRefresher refresher = new AvatarRefresher();
-        refresher.refreshDatabase();
-        System.out.println("Database refreshed successfully!");
-    }
+
 }

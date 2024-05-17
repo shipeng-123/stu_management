@@ -344,11 +344,5 @@ public class Select_Stu extends JPanel implements ActionListener {
         repaint();
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("学生信息查询系统");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(900, 700); // 增加主框架大小
-        frame.setContentPane(new Select_Stu());
-        frame.setVisible(true);
-    }
+
 }
