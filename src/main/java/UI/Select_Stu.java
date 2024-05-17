@@ -1,7 +1,11 @@
 package UI;
 
+import sql.DBConfig;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,20 +20,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import sql.DBConfig;
-
 public class Select_Stu extends JPanel implements ActionListener {
     private final JTable table;
     private final JTextField jtf_id, jtf_name, jft_go;
     private final JLabel jl_gong;
-    private final JButton jb_first, jb_up, jb_down, jb_search, jb_jump;
+    private final JButton jb_first, jb_up, jb_down, jb_search, jb_jump, jb_edit, jb_delete;
     private final DefaultTableModel stuTable;
     private final JButton jb_last;
     private static final String[] columnNames = { "头像", "学号", "姓名", "性别", "生日", "年龄", "系别", "宿舍" };
 
     public Select_Stu() {
         setLayout(null);
-        setSize(800, 600); // 增加界面大小
+        setSize(900, 700); // 增加界面大小
 
         JLabel jl_title = new JLabel("学生信息查询");
         jl_title.setFont(new Font("微软雅黑", Font.PLAIN, 26));
@@ -54,9 +56,10 @@ public class Select_Stu extends JPanel implements ActionListener {
 
         table = new JTable(stuTable);
         setWidth();
-        table.setEnabled(false);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 允许单行选择
+
         JScrollPane line = new JScrollPane(table);
-        line.setBounds(20, 150, 750, 400); // 调整表格大小和位置
+        line.setBounds(20, 150, 850, 400); // 调整表格大小和位置
         add(line);
 
         JLabel jl_id = new JLabel("学 号");
@@ -125,10 +128,41 @@ public class Select_Stu extends JPanel implements ActionListener {
         jl_ye.setBounds(620, 560, 20, 30);
         add(jl_ye);
 
-        jl_gong = new JLabel("当前第  1 页 共  1 页");
+        jl_gong = new JLabel("当前第 1 页 共 1 页");
         jl_gong.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jl_gong.setBounds(420, 560, 200, 30);
         add(jl_gong);
+
+
+
+        jb_edit = new JButton("编辑");
+        jb_edit.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+        jb_edit.setBounds(640, 600, 80, 30);
+        jb_edit.setEnabled(false);
+        add(jb_edit);
+
+        jb_delete = new JButton("删除");
+        jb_delete.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+        jb_delete.setBounds(740, 600, 80, 30);
+        jb_delete.setEnabled(false);
+        add(jb_delete);
+
+        // 添加表格行选择事件监听器
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting() && table.getSelectedRow() != -1) {
+                    jb_edit.setEnabled(true);
+                    jb_delete.setEnabled(true);
+                } else {
+                    jb_edit.setEnabled(false);
+                    jb_delete.setEnabled(false);
+                }
+            }
+        });
+
+        jb_edit.addActionListener(this);
+        jb_delete.addActionListener(this);
     }
 
     private void setWidth() {
@@ -137,11 +171,11 @@ public class Select_Stu extends JPanel implements ActionListener {
         table.getColumnModel().getColumn(1).setPreferredWidth(120);
         table.getColumnModel().getColumn(2).setPreferredWidth(120);
         table.getColumnModel().getColumn(3).setPreferredWidth(60);
-        table.getColumnModel().getColumn(4).setPreferredWidth(100);
-        table.getColumnModel().getColumn(5).setPreferredWidth(150);
+        table.getColumnModel().getColumn(4).setPreferredWidth(150);
+        table.getColumnModel().getColumn(5).setPreferredWidth(100);
         table.getColumnModel().getColumn(6).setPreferredWidth(200);
         table.getColumnModel().getColumn(7).setPreferredWidth(150);
-        table.setRowSelectionAllowed(false);
+        table.setRowSelectionAllowed(true);
     }
 
     private List<Object[]> fetchData(String studentId, String studentName) {
@@ -188,15 +222,63 @@ public class Select_Stu extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb_search) {
-            String studentId = jtf_id.getText();
-            String studentName = jtf_name.getText();
-            List<Object[]> data = fetchData(studentId, studentName);
-            Object[][] dataArray = data.toArray(new Object[0][]);
-            stuTable.setDataVector(dataArray, columnNames);
-            setWidth();
-            revalidate();
-            repaint();
+            refreshTable();
+        } else if (e.getSource() == jb_edit) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                String studentId = table.getValueAt(selectedRow, 1).toString();
+                JDialog modifyDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "修改学生信息", true);
+                modifyDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                modifyDialog.setSize(600, 500);
+                modifyDialog.setLocationRelativeTo(this);
+                modifyDialog.setContentPane(new Modify_stu(studentId, new Modify_stu.RefreshTableListener() {
+                    @Override
+                    public void refreshTable() {
+                        Select_Stu.this.refreshTable();
+                    }
+                }));
+                modifyDialog.setVisible(true);
+            }
+        } else if (e.getSource() == jb_delete) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                String studentId = table.getValueAt(selectedRow, 1).toString();
+                String studentName = table.getValueAt(selectedRow, 2).toString();
+                int confirm = JOptionPane.showConfirmDialog(this, "您确定删除学号: " + studentId + " 姓名: " + studentName + " 的学生信息吗？", "确认删除", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    deleteStudent(studentId);
+                }
+            }
         }
+    }
+
+    private void deleteStudent(String studentId) {
+        try (Connection conn = DBConfig.getConnection()) {
+            String sql = "DELETE FROM students WHERE student_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, studentId);
+            int rows = pstmt.executeUpdate();
+            if (rows > 0) {
+                JOptionPane.showMessageDialog(this, "学生信息删除成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                refreshTable();
+            } else {
+                JOptionPane.showMessageDialog(this, "学生信息删除失败！", "提示", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "删除学生信息时出错！", "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void refreshTable() {
+        String studentId = jtf_id.getText();
+        String studentName = jtf_name.getText();
+        List<Object[]> data = fetchData(studentId, studentName);
+        Object[][] dataArray = data.toArray(new Object[0][]);
+        stuTable.setDataVector(dataArray, columnNames);
+        setWidth();
+        revalidate();
+        repaint();
     }
 
     public static void main(String[] args) {

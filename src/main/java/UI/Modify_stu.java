@@ -18,13 +18,15 @@ import java.sql.ResultSet;
 
 public class Modify_stu extends JPanel implements ActionListener {
     private final JTextField jtf_num, jtf_stuNum, jtf_stuName, jtf_stuBirthday, jtf_stuAge, jtf_stuDorm;
-    private final JButton jb_enter, jb_reset, jb_search_enter, jb_search_reset, jb_upload;
+    private final JButton jb_enter, jb_reset, jb_upload;
     private final JRadioButton jrb_man, jrb_woman;
     private final JComboBox<String> jcb_stuMajor;
     private JLabel jl_image;
     private File selectedImageFile;
+    private RefreshTableListener refreshTableListener;
 
-    public Modify_stu() {
+    public Modify_stu(String studentId, RefreshTableListener refreshTableListener) {
+        this.refreshTableListener = refreshTableListener;
         setSize(526, 461);
         setLayout(null);
 
@@ -38,20 +40,11 @@ public class Modify_stu extends JPanel implements ActionListener {
         jl_num.setBounds(10, 55, 79, 36);
         add(jl_num);
 
-        jtf_num = new JTextField();
+        jtf_num = new JTextField(studentId);
         jtf_num.setBounds(99, 54, 211, 41);
+        jtf_num.setEditable(false); // 学号不允许修改
         add(jtf_num);
         jtf_num.setColumns(10);
-
-        jb_search_enter = new JButton("搜 索");
-        jb_search_enter.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-        jb_search_enter.setBounds(320, 53, 93, 41);
-        add(jb_search_enter);
-
-        jb_search_reset = new JButton("清 空");
-        jb_search_reset.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-        jb_search_reset.setBounds(423, 53, 93, 41);
-        add(jb_search_reset);
 
         // 添加图片显示区域
         jl_image = new JLabel();
@@ -171,9 +164,10 @@ public class Modify_stu extends JPanel implements ActionListener {
 
         jb_enter.addActionListener(this);
         jb_reset.addActionListener(this);
-        jb_search_enter.addActionListener(this);
-        jb_search_reset.addActionListener(this);
         jb_upload.addActionListener(this);
+
+        // 搜索学生信息并填充字段
+        searchStudentById(studentId);
     }
 
     @Override
@@ -188,18 +182,6 @@ public class Modify_stu extends JPanel implements ActionListener {
             jtf_stuBirthday.setText("");
             jtf_stuName.requestFocus();
             resetImage();
-        }
-        if (e.getSource() == jb_search_enter) {
-            // 实现搜索逻辑
-            String studentId = jtf_num.getText().trim();
-            if (studentId.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "请输入学号！", "提示", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            searchStudentById(studentId);
-        }
-        if (e.getSource() == jb_search_reset) {
-            jtf_num.setText("");
         }
         if (e.getSource() == jb_upload) {
             uploadImage();
@@ -310,6 +292,9 @@ public class Modify_stu extends JPanel implements ActionListener {
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 JOptionPane.showMessageDialog(this, "学生信息更新成功！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                if (refreshTableListener != null) {
+                    refreshTableListener.refreshTable();
+                }
             } else {
                 JOptionPane.showMessageDialog(this, "学生信息更新失败！", "提示", JOptionPane.ERROR_MESSAGE);
             }
@@ -317,5 +302,9 @@ public class Modify_stu extends JPanel implements ActionListener {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "更新学生信息时出错！", "错误", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public interface RefreshTableListener {
+        void refreshTable();
     }
 }

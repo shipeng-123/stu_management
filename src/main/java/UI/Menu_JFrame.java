@@ -95,12 +95,7 @@ public class Menu_JFrame extends JFrame implements ActionListener {
             addDialog.setContentPane(new Select_Stu());
             addDialog.setVisible(true);
         } else if (e.getSource() == jb_update) { // 添加处理修改学生信息按钮的逻辑
-            JDialog updateDialog = new JDialog(this, "修改学生信息", true);
-            updateDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            updateDialog.setSize(600, 500);
-            updateDialog.setLocationRelativeTo(this);
-            updateDialog.setContentPane(new Modify_stu());
-            updateDialog.setVisible(true);
+
         }
         else if (e.getSource() == jb_download_img) { // 添加处理修改学生信息按钮的逻辑
             JDialog updateDialog = new JDialog(this, "保存学生头像", true);
