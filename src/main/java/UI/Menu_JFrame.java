@@ -41,7 +41,7 @@ public class Menu_JFrame extends JFrame implements ActionListener {
         jb_delete.setFont(new Font("微软雅黑", Font.PLAIN, 14));
         getContentPane().add(jb_delete);
 
-        jb_download_img = new JButton("保存学生相片");
+        jb_download_img = new JButton("保存学生头像");
         jb_download_img.setBounds(10, 310, 119, 36);
         jb_download_img.setFont(new Font("微软雅黑", Font.PLAIN, 14));
         getContentPane().add(jb_download_img);
@@ -100,6 +100,14 @@ public class Menu_JFrame extends JFrame implements ActionListener {
             updateDialog.setSize(600, 500);
             updateDialog.setLocationRelativeTo(this);
             updateDialog.setContentPane(new Modify_stu());
+            updateDialog.setVisible(true);
+        }
+        else if (e.getSource() == jb_download_img) { // 添加处理修改学生信息按钮的逻辑
+            JDialog updateDialog = new JDialog(this, "保存学生头像", true);
+            updateDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            updateDialog.setSize(600, 500);
+            updateDialog.setLocationRelativeTo(this);
+            updateDialog.setContentPane(new Download_Stu_Image());
             updateDialog.setVisible(true);
         }
         // 其他按钮的处理逻辑可以放在这里

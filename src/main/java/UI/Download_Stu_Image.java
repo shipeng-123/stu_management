@@ -1,0 +1,137 @@
+package UI;
+
+import sql.DBConfig;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class Download_Stu_Image extends JPanel implements ActionListener {
+    private final JTextField jtf_num;
+    private final JButton jb_search, jb_download;
+    private JLabel jl_image;
+    private BufferedImage currentImage;
+
+    public Download_Stu_Image() {
+        setSize(526, 461);
+        setLayout(null);
+
+        JLabel jl_title = new JLabel("保存学生图片");
+        jl_title.setFont(new Font("微软雅黑", Font.PLAIN, 26));
+        jl_title.setBounds(167, 10, 165, 34);
+        add(jl_title);
+
+        JLabel jl_num = new JLabel("学 号");
+        jl_num.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        jl_num.setBounds(10, 55, 79, 36);
+        add(jl_num);
+
+        jtf_num = new JTextField();
+        jtf_num.setBounds(99, 54, 211, 41);
+        add(jtf_num);
+        jtf_num.setColumns(10);
+
+        jb_search = new JButton("搜 索");
+        jb_search.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        jb_search.setBounds(320, 53, 93, 41);
+        add(jb_search);
+
+        // 添加图片显示区域
+        jl_image = new JLabel();
+        jl_image.setBounds(100, 150, 200, 200);
+        jl_image.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        add(jl_image);
+
+        // 添加下载图片按钮
+        jb_download = new JButton("下载头像");
+        jb_download.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        jb_download.setBounds(320, 250, 120, 41);
+        add(jb_download);
+
+        jb_search.addActionListener(this);
+        jb_download.addActionListener(this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == jb_search) {
+            searchStudentById();
+        } else if (e.getSource() == jb_download) {
+            downloadImage();
+        }
+    }
+
+    private void searchStudentById() {
+        String studentId = jtf_num.getText().trim();
+        if (studentId.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "请输入学号！", "提示", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        try (Connection conn = DBConfig.getConnection()) {
+            String sql = "SELECT avatar FROM students WHERE student_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, studentId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                byte[] avatarBytes = rs.getBytes("avatar");
+                if (avatarBytes != null) {
+                    ByteArrayInputStream bais = new ByteArrayInputStream(avatarBytes);
+                    currentImage = ImageIO.read(bais);
+                    Image avatarImage = currentImage.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                    jl_image.setIcon(new ImageIcon(avatarImage));
+                } else {
+                    resetImage();
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "未找到该学生信息！", "提示", JOptionPane.INFORMATION_MESSAGE);
+                resetImage();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "查询学生信息时出错！", "错误", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void downloadImage() {
+        if (currentImage == null) {
+            JOptionPane.showMessageDialog(this, "请先搜索学生信息！", "提示", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("保存图片");
+        int returnValue = fileChooser.showSaveDialog(this);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try {
+                ImageIO.write(currentImage, "jpg", file);
+                JOptionPane.showMessageDialog(this, "头像已成功下载！", "提示", JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "下载头像失败！", "错误", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void resetImage() {
+        currentImage = null;
+        jl_image.setIcon(null);
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("保存学生图片");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(600, 500);
+        frame.setLocationRelativeTo(null); // 居中显示
+        frame.setContentPane(new Download_Stu_Image());
+        frame.setVisible(true);
+    }
+}
