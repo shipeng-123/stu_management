@@ -87,6 +87,13 @@ public class Menu_JFrame extends JFrame implements ActionListener {
             addDialog.setLocationRelativeTo(this);
             addDialog.setContentPane(new ADD_Stu());
             addDialog.setVisible(true);
+        } else if (e.getSource()==jb_select) {
+            JDialog addDialog = new JDialog(this, "查询学生小心些", true);
+            addDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            addDialog.setSize(800, 600);
+            addDialog.setLocationRelativeTo(this);
+            addDialog.setContentPane(new Select_Stu());
+            addDialog.setVisible(true);
         }
         // 其他按钮的处理逻辑可以放在这里
     }

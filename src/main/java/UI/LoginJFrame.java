@@ -8,6 +8,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import sql.DBConfig;
+
+
 public class LoginJFrame extends JFrame implements ActionListener, MouseListener {
     String admin = "admin";
     String admin_password = "123456";
@@ -115,6 +122,22 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
         init_CAPTCHA_str();
     }
 
+    private boolean authenticateAdmin(String username, String password) {
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT password FROM admin WHERE username = ?")) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedPassword = rs.getString("password");
+                    return storedPassword.equals(password);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -135,7 +158,7 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
                 JOptionPane.showMessageDialog(this, "验证码错误");
                 // 刷新验证码
                 init_CAPTCHA_str();
-            } else if (username.equals(admin) && password.equals(admin_password)) {
+            } else  if (authenticateAdmin(username, password)) {
                 menu.setVisible(true);
                 this.dispose();
             } else {
