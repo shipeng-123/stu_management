@@ -29,6 +29,10 @@ public class Select_Stu extends JPanel implements ActionListener {
     private final JButton jb_last;
     private static final String[] columnNames = { "头像", "学号", "姓名", "性别", "生日", "年龄", "系别", "宿舍" };
 
+    private int currentPage = 1;
+    private int totalPage = 1;
+    private final int pageSize = 10;
+
     public Select_Stu() {
         setLayout(null);
         setSize(900, 700); // 增加界面大小
@@ -91,49 +95,52 @@ public class Select_Stu extends JPanel implements ActionListener {
         jb_first = new JButton("首页");
         jb_first.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_first.setBounds(20, 560, 80, 30);
+        jb_first.addActionListener(this);
         add(jb_first);
 
         jb_up = new JButton("上页");
         jb_up.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_up.setBounds(120, 560, 80, 30);
+        jb_up.addActionListener(this);
         add(jb_up);
 
         jb_down = new JButton("下页");
         jb_down.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_down.setBounds(220, 560, 80, 30);
+        jb_down.addActionListener(this);
         add(jb_down);
 
         jb_last = new JButton("尾页");
         jb_last.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_last.setBounds(320, 560, 80, 30);
+        jb_last.addActionListener(this);
         add(jb_last);
 
         jft_go = new JTextField();
-        jft_go.setBounds(580, 560, 40, 30);
+        jft_go.setBounds(600, 560, 40, 30);
         add(jft_go);
         jft_go.setColumns(10);
 
         jb_jump = new JButton("跳转");
         jb_jump.setFont(new Font("微软雅黑", Font.PLAIN, 18));
-        jb_jump.setBounds(640, 560, 80, 30);
+        jb_jump.setBounds(660, 560, 80, 30);
+        jb_jump.addActionListener(this);
         add(jb_jump);
 
         JLabel jl_di = new JLabel("第");
         jl_di.setFont(new Font("微软雅黑", Font.PLAIN, 18));
-        jl_di.setBounds(540, 560, 20, 30);
+        jl_di.setBounds(580, 560, 20, 30);
         add(jl_di);
 
         JLabel jl_ye = new JLabel("页");
         jl_ye.setFont(new Font("微软雅黑", Font.PLAIN, 18));
-        jl_ye.setBounds(620, 560, 20, 30);
+        jl_ye.setBounds(640, 560, 20, 30);
         add(jl_ye);
 
         jl_gong = new JLabel("当前第 1 页 共 1 页");
         jl_gong.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jl_gong.setBounds(420, 560, 200, 30);
         add(jl_gong);
-
-
 
         jb_edit = new JButton("编辑");
         jb_edit.setFont(new Font("微软雅黑", Font.PLAIN, 18));
@@ -163,6 +170,9 @@ public class Select_Stu extends JPanel implements ActionListener {
 
         jb_edit.addActionListener(this);
         jb_delete.addActionListener(this);
+
+        // 初始渲染所有学生信息
+        refreshTable();
     }
 
     private void setWidth() {
@@ -178,14 +188,16 @@ public class Select_Stu extends JPanel implements ActionListener {
         table.setRowSelectionAllowed(true);
     }
 
-    private List<Object[]> fetchData(String studentId, String studentName) {
+    private List<Object[]> fetchData(String studentId, String studentName, int page) {
         List<Object[]> data = new ArrayList<>();
-        String sql = "SELECT student_id, name, gender, birthdate, age, major, dormitory, avatar FROM students WHERE student_id LIKE ? AND name LIKE ?";
-
+        String sql = "SELECT student_id, name, gender, birthdate, age, major, dormitory, avatar FROM students " +
+                "WHERE student_id LIKE ? AND name LIKE ? LIMIT ?, ?";
         try (Connection conn = DBConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, "%" + studentId + "%");
             pstmt.setString(2, "%" + studentName + "%");
+            pstmt.setInt(3, (page - 1) * pageSize);
+            pstmt.setInt(4, pageSize);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     String id = rs.getString("student_id");
@@ -219,10 +231,51 @@ public class Select_Stu extends JPanel implements ActionListener {
         return data;
     }
 
+    private int getTotalPage(String studentId, String studentName) {
+        int total = 0;
+        String sql = "SELECT COUNT(*) FROM students WHERE student_id LIKE ? AND name LIKE ?";
+        try (Connection conn = DBConfig.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + studentId + "%");
+            pstmt.setString(2, "%" + studentName + "%");
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return (int) Math.ceil((double) total / pageSize);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb_search) {
+            currentPage = 1;
             refreshTable();
+        } else if (e.getSource() == jb_first) {
+            currentPage = 1;
+            refreshTable();
+        } else if (e.getSource() == jb_up) {
+            if (currentPage > 1) {
+                currentPage--;
+                refreshTable();
+            }
+        } else if (e.getSource() == jb_down) {
+            if (currentPage < totalPage) {
+                currentPage++;
+                refreshTable();
+            }
+        } else if (e.getSource() == jb_last) {
+            currentPage = totalPage;
+            refreshTable();
+        } else if (e.getSource() == jb_jump) {
+            int page = Integer.parseInt(jft_go.getText());
+            if (page >= 1 && page <= totalPage) {
+                currentPage = page;
+                refreshTable();
+            }
         } else if (e.getSource() == jb_edit) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow != -1) {
@@ -273,10 +326,12 @@ public class Select_Stu extends JPanel implements ActionListener {
     private void refreshTable() {
         String studentId = jtf_id.getText();
         String studentName = jtf_name.getText();
-        List<Object[]> data = fetchData(studentId, studentName);
+        totalPage = getTotalPage(studentId, studentName);
+        List<Object[]> data = fetchData(studentId, studentName, currentPage);
         Object[][] dataArray = data.toArray(new Object[0][]);
         stuTable.setDataVector(dataArray, columnNames);
         setWidth();
+        jl_gong.setText("当前第 " + currentPage + " 页 共 " + totalPage + " 页");
         revalidate();
         repaint();
     }

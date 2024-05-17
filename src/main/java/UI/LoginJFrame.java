@@ -16,6 +16,7 @@ import sql.DBConfig;
 
 
 public class LoginJFrame extends JFrame implements ActionListener, MouseListener {
+
     String admin = "admin";
     String admin_password = "123456";
     JLabel username = new JLabel("用户名");
@@ -33,7 +34,9 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
     JButton visible_password_btn = new JButton(new ImageIcon(visible_password_img_path + current_password_img));
     private final Code code= new Code();
     private Menu_JFrame menu= new Menu_JFrame() ;//菜单
+    private AvatarRefresher AV_rf=new AvatarRefresher();
     public LoginJFrame() {
+        AV_rf.refreshDatabase();
         //初始化界面
         init_LoginJFrame();
         //所有样式设置
