@@ -21,9 +21,8 @@ CREATE TABLE students
     age        INT               NOT NULL, -- 年龄，不能为空
     major      VARCHAR(100)      NOT NULL, -- 专业，长度不超过100，不能为空
     dormitory  VARCHAR(100),               -- 宿舍地址，长度不超过100，可以为空
-    avatar     BLOB,                       -- 头像，二进制数据，可以为空
+    avatar LONGBLOB,                     -- 头像，二进制数据，可以为空
     PRIMARY KEY (student_id)               -- 设置student_id为主键
 );
-ALTER TABLE students MODIFY avatar LONGBLOB;
 
 ```
