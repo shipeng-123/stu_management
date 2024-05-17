@@ -25,6 +25,8 @@ public class Modify_stu extends JPanel implements ActionListener {
     private File selectedImageFile;
     private final String studentId;
     private final RefreshTableListener refreshTableListener;
+    private byte[] originalAvatarBytes;
+    private ImageIcon imageIcon;
 
     public Modify_stu(String studentId, RefreshTableListener refreshTableListener) {
         this.studentId = studentId;
@@ -66,9 +68,10 @@ public class Modify_stu extends JPanel implements ActionListener {
         add(jl_image);
         // 加载默认图片
         try {
-            Image img = ImageIO.read(new File("src/main/resources/Img/Add_Stu/menu-user.png"));
-            img = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            jl_image.setIcon(new ImageIcon(img));
+            BufferedImage defaultImage = ImageIO.read(new File("src/main/resources/Img/Add_Stu/menu-user.png"));
+            Image scaledImage = defaultImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageIcon = new ImageIcon(scaledImage);
+            jl_image.setIcon(imageIcon);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,12 +242,13 @@ public class Modify_stu extends JPanel implements ActionListener {
                 jcb_stuMajor.setSelectedItem(rs.getString("major"));
                 jtf_stuDorm.setText(rs.getString("dormitory"));
 
-                byte[] avatarBytes = rs.getBytes("avatar");
-                if (avatarBytes != null) {
-                    ByteArrayInputStream bais = new ByteArrayInputStream(avatarBytes);
+                originalAvatarBytes = rs.getBytes("avatar");
+                if (originalAvatarBytes != null) {
+                    ByteArrayInputStream bais = new ByteArrayInputStream(originalAvatarBytes);
                     BufferedImage bufferedImage = ImageIO.read(bais);
                     Image avatarImage = bufferedImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                    jl_image.setIcon(new ImageIcon(avatarImage));
+                    imageIcon = new ImageIcon(avatarImage);
+                    jl_image.setIcon(imageIcon);
                 } else {
                     resetImage();
                 }
@@ -265,7 +269,8 @@ public class Modify_stu extends JPanel implements ActionListener {
             try {
                 BufferedImage bufferedImage = ImageIO.read(selectedImageFile);
                 Image avatarImage = bufferedImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                jl_image.setIcon(new ImageIcon(avatarImage));
+                imageIcon = new ImageIcon(avatarImage);
+                jl_image.setIcon(imageIcon);
             } catch (IOException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "上传图片失败！", "错误", JOptionPane.ERROR_MESSAGE);
@@ -275,9 +280,10 @@ public class Modify_stu extends JPanel implements ActionListener {
 
     private void resetImage() {
         try {
-            Image img = ImageIO.read(new File("src/main/resources/Img/Add_Stu/menu-user.png"));
-            img = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-            jl_image.setIcon(new ImageIcon(img));
+            BufferedImage defaultImage = ImageIO.read(new File("src/main/resources/Img/Add_Stu/menu-user.png"));
+            Image scaledImage = defaultImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageIcon = new ImageIcon(scaledImage);
+            jl_image.setIcon(imageIcon);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -297,13 +303,17 @@ public class Modify_stu extends JPanel implements ActionListener {
             try {
                 BufferedImage bufferedImage = ImageIO.read(selectedImageFile);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(bufferedImage, "jpg", baos);
+                String fileName = selectedImageFile.getName().toLowerCase();
+                String formatName = fileName.endsWith(".png") ? "png" : "jpg";
+                ImageIO.write(bufferedImage, formatName, baos);
                 avatarBytes = baos.toByteArray();
             } catch (IOException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "处理图片时出错！", "错误", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+        } else {
+            avatarBytes = originalAvatarBytes;
         }
 
         try (Connection conn = DBConfig.getConnection()) {

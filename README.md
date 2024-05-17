@@ -4,7 +4,7 @@
 ## 创建数据库
 ```mysql
 -- 管理员表
-CREATE TABLE admin
+CREATE TABLE IF NOT EXISTS admin
 (
     id       INT AUTO_INCREMENT PRIMARY KEY, -- 管理员ID，自动递增，主键
     username VARCHAR(20)  NOT NULL UNIQUE,   -- 用户名，长度不超过20，不能为空，唯一
@@ -12,7 +12,7 @@ CREATE TABLE admin
 );
 
 -- 学生表
-CREATE TABLE students
+CREATE TABLE IF NOT EXISTS students
 (
     student_id VARCHAR(20)       NOT NULL, -- 学生ID，长度不超过20，不能为空，主键
     name       VARCHAR(50)       NOT NULL, -- 学生姓名，长度不超过50，不能为空

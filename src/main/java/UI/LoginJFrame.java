@@ -36,7 +36,6 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
     private Menu_JFrame menu= new Menu_JFrame() ;//菜单
     private AvatarRefresher AV_rf=new AvatarRefresher();
     public LoginJFrame() {
-        AV_rf.refreshDatabase();
         //初始化界面
         init_LoginJFrame();
         //所有样式设置
@@ -46,7 +45,6 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
 
     private void login_CSS() {
         //设置输入标签样式
-
         username_text.setBounds(200, 120, 200, 30);
         username_text.setFont(new Font("宋体", Font.BOLD, 20));
         this.getContentPane().add(username_text);
@@ -123,6 +121,7 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         // 创建面板用于添加组件
         init_CAPTCHA_str();
+
     }
 
     private boolean authenticateAdmin(String username, String password) {
