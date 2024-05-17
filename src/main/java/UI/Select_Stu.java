@@ -280,7 +280,15 @@ public class Select_Stu extends JPanel implements ActionListener {
             int selectedRow = table.getSelectedRow();
             if (selectedRow != -1) {
                 String studentId = table.getValueAt(selectedRow, 1).toString();
-                JDialog modifyDialog = new JDialog((JFrame) SwingUtilities.getWindowAncestor(this), "修改学生信息", true);
+                Window window = SwingUtilities.getWindowAncestor(this);
+                JDialog modifyDialog;
+                if (window instanceof Frame) {
+                    modifyDialog = new JDialog((Frame) window, "修改学生信息", true);
+                } else if (window instanceof Dialog) {
+                    modifyDialog = new JDialog((Dialog) window, "修改学生信息", true);
+                } else {
+                    throw new IllegalStateException("Unexpected window ancestor");
+                }
                 modifyDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 modifyDialog.setSize(600, 500);
                 modifyDialog.setLocationRelativeTo(this);

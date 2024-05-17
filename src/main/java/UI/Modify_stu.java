@@ -25,6 +25,7 @@ public class Modify_stu extends JPanel implements ActionListener {
     private File selectedImageFile;
     private final String studentId;
     private final RefreshTableListener refreshTableListener;
+
     public Modify_stu(String studentId, RefreshTableListener refreshTableListener) {
         this.studentId = studentId;
         this.refreshTableListener = refreshTableListener;
@@ -120,7 +121,6 @@ public class Modify_stu extends JPanel implements ActionListener {
 
         jtf_stuName = new JTextField();
         jtf_stuName.setColumns(10);
-        jtf_stuNum.setEditable(false); // 是否可编辑，保留原样
         jtf_stuName.setBounds(100, 171, 211, 41);
         add(jtf_stuName);
 
@@ -164,9 +164,16 @@ public class Modify_stu extends JPanel implements ActionListener {
 
         jcb_stuMajor = new JComboBox<>();
         jcb_stuMajor.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-        jcb_stuMajor.addItem("");
+        jcb_stuMajor.addItem("请选择");
         jcb_stuMajor.addItem("计算机科学与技术");
         jcb_stuMajor.addItem("物联网工程");
+        jcb_stuMajor.addItem("电子信息工程");
+        jcb_stuMajor.addItem("机械工程");
+        jcb_stuMajor.addItem("土木工程");
+        jcb_stuMajor.addItem("生物医学工程");
+        jcb_stuMajor.addItem("材料科学与工程");
+        jcb_stuMajor.addItem("化学工程与工艺");
+        jcb_stuMajor.addItem("环境工程");
         jcb_stuMajor.setBounds(100, 357, 211, 41);
         add(jcb_stuMajor);
 
