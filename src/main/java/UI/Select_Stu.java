@@ -32,11 +32,11 @@ public class Select_Stu extends JPanel implements ActionListener {
     private int currentPage = 1;
     private int totalPage = 1;
     private final int pageSize = 10;
-
+    private AvatarRefresher Ava_RF= new AvatarRefresher();
     public Select_Stu() {
         setLayout(null);
         setSize(900, 700); // 增加界面大小
-
+        Ava_RF.refreshDatabase();
         JLabel jl_title = new JLabel("学生信息查询");
         jl_title.setFont(new Font("微软雅黑", Font.PLAIN, 26));
         jl_title.setBounds(300, 10, 200, 34);
