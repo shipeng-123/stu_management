@@ -168,7 +168,7 @@ public class Select_Stu extends JPanel implements ActionListener {
                         try {
                             BufferedImage img = ImageIO.read(new ByteArrayInputStream(avatarBytes));
                             if (img != null) {
-                                Image scaledImg = img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
+                                Image scaledImg = img.getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                                 avatar = new ImageIcon(scaledImg);
                             }
                         } catch (IOException ex) {

@@ -24,4 +24,6 @@ CREATE TABLE students
     avatar     BLOB,                       -- 头像，二进制数据，可以为空
     PRIMARY KEY (student_id)               -- 设置student_id为主键
 );
+ALTER TABLE students MODIFY avatar LONGBLOB;
+
 ```

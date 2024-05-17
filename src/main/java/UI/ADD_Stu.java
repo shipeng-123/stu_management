@@ -128,6 +128,16 @@ public class ADD_Stu extends JPanel implements ActionListener {
         jl_image.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         jl_image.setBounds(400, 70, 100, 100);
         this.add(jl_image);
+        // 设置默认头像
+        try {
+            BufferedImage defaultImage = ImageIO.read(new File("src/main/resources/Img/Add_Stu/menu-user.png"));
+            Image scaledImage = defaultImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            imageIcon = new ImageIcon(scaledImage);
+            jl_image.setIcon(imageIcon);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
         // 添加图片按钮
         jb_addImage = new JButton("添加图片");
@@ -178,13 +188,28 @@ public class ADD_Stu extends JPanel implements ActionListener {
     }
 
     private void insertStudentInfo() {
-        String studentId = jtf_stuNum.getText();
-        String name = jtf_stuName.getText();
+        String studentId = jtf_stuNum.getText().trim();
+        String name = jtf_stuName.getText().trim();
         String gender = jrb_man.isSelected() ? "男" : "女";
-        String birthdate = jtf_stuBirthday.getText();
-        int age = Integer.parseInt(jtf_stuAge.getText());
+        String birthdate = jtf_stuBirthday.getText().trim();
+        String ageText = jtf_stuAge.getText().trim();
         String major = (String) jcb_stuMajor.getSelectedItem();
-        String dormitory = jtf_stuDorm.getText();
+        String dormitory = jtf_stuDorm.getText().trim();
+
+        // 检查输入字段是否为空
+        if (studentId.isEmpty() || name.isEmpty() || birthdate.isEmpty() || ageText.isEmpty() || major.equals("请选择") || dormitory.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "请填写所有字段！");
+            return;
+        }
+
+        int age;
+        try {
+            age = Integer.parseInt(ageText);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "年龄必须是数字！");
+            return;
+        }
+
         byte[] avatar = imageIcon != null ? imageToBytes(imageIcon.getImage()) : null;
 
         try (Connection conn = DBConfig.getConnection()) {
@@ -205,6 +230,7 @@ public class ADD_Stu extends JPanel implements ActionListener {
             JOptionPane.showMessageDialog(this, "添加学生信息失败！");
         }
     }
+
 
     // 将Image转换为字节数组的方法
     private byte[] imageToBytes(Image image) {

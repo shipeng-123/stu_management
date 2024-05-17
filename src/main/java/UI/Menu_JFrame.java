@@ -87,16 +87,24 @@ public class Menu_JFrame extends JFrame implements ActionListener {
             addDialog.setLocationRelativeTo(this);
             addDialog.setContentPane(new ADD_Stu());
             addDialog.setVisible(true);
-        } else if (e.getSource()==jb_select) {
-            JDialog addDialog = new JDialog(this, "查询学生小心些", true);
+        } else if (e.getSource() == jb_select) {
+            JDialog addDialog = new JDialog(this, "查询学生信息", true);
             addDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             addDialog.setSize(800, 600);
             addDialog.setLocationRelativeTo(this);
             addDialog.setContentPane(new Select_Stu());
             addDialog.setVisible(true);
+        } else if (e.getSource() == jb_update) { // 添加处理修改学生信息按钮的逻辑
+            JDialog updateDialog = new JDialog(this, "修改学生信息", true);
+            updateDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            updateDialog.setSize(600, 500);
+            updateDialog.setLocationRelativeTo(this);
+            updateDialog.setContentPane(new Modify_stu());
+            updateDialog.setVisible(true);
         }
         // 其他按钮的处理逻辑可以放在这里
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
