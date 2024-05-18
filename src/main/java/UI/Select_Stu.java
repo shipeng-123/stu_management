@@ -117,24 +117,24 @@ public class Select_Stu extends JPanel implements ActionListener {
         add(jb_last);
 
         jft_go = new JTextField();
-        jft_go.setBounds(600, 560, 40, 30);
+        jft_go.setBounds(610, 560, 40, 30);
         add(jft_go);
         jft_go.setColumns(10);
 
         jb_jump = new JButton("跳转");
         jb_jump.setFont(new Font("微软雅黑", Font.PLAIN, 18));
-        jb_jump.setBounds(660, 560, 80, 30);
+        jb_jump.setBounds(670, 560, 80, 30);
         jb_jump.addActionListener(this);
         add(jb_jump);
 
         JLabel jl_di = new JLabel("第");
         jl_di.setFont(new Font("微软雅黑", Font.PLAIN, 18));
-        jl_di.setBounds(580, 560, 20, 30);
+        jl_di.setBounds(590, 560, 20, 30);
         add(jl_di);
 
         JLabel jl_ye = new JLabel("页");
         jl_ye.setFont(new Font("微软雅黑", Font.PLAIN, 18));
-        jl_ye.setBounds(640, 560, 20, 30);
+        jl_ye.setBounds(650, 560, 20, 30);
         add(jl_ye);
 
         jl_gong = new JLabel("当前第 1 页 共 1 页");
