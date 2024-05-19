@@ -17,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Modify_stu extends JPanel implements ActionListener {
+    // 定义表单字段和按钮
     private final JTextField jtf_num, jtf_stuNum, jtf_stuName, jtf_stuBirthday, jtf_stuAge, jtf_stuDorm;
     private final JButton jb_enter, jb_reset, jb_search_enter, jb_search_reset, jb_upload;
     private final JRadioButton jrb_man, jrb_woman;
@@ -28,6 +29,7 @@ public class Modify_stu extends JPanel implements ActionListener {
     private byte[] originalAvatarBytes;
     private ImageIcon imageIcon;
 
+    // 构造函数，初始化面板和组件
     public Modify_stu(String studentId, RefreshTableListener refreshTableListener) {
         this.studentId = studentId;
         this.refreshTableListener = refreshTableListener;
@@ -35,11 +37,13 @@ public class Modify_stu extends JPanel implements ActionListener {
         setSize(526, 461);
         setLayout(null);
 
+        // 添加标题标签
         JLabel jl_title = new JLabel("学生信息修改");
         jl_title.setFont(new Font("微软雅黑", Font.PLAIN, 26));
         jl_title.setBounds(167, 10, 165, 34);
         add(jl_title);
 
+        // 添加学号标签和文本框
         JLabel jl_num = new JLabel("学 号");
         jl_num.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         jl_num.setBounds(10, 55, 79, 36);
@@ -51,6 +55,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         jtf_num.setColumns(10);
         jtf_num.setEditable(false);
 
+        // 添加搜索和重置按钮
         jb_search_enter = new JButton("搜 索");
         jb_search_enter.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         jb_search_enter.setBounds(320, 53, 93, 41);
@@ -66,6 +71,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         jl_image.setBounds(400, 150, 100, 100);
         jl_image.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         add(jl_image);
+
         // 加载默认图片
         try {
             BufferedImage defaultImage = ImageIO.read(new File("src/main/resources/Img/Add_Stu/menu-user.png"));
@@ -82,6 +88,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         jb_upload.setBounds(400, 260, 100, 41);
         add(jb_upload);
 
+        // 添加学生信息标签和文本框
         JLabel jl_stuNum = new JLabel("学 号");
         jl_stuNum.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         jl_stuNum.setBounds(10, 127, 79, 36);
@@ -142,6 +149,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         jtf_stuDorm.setBounds(100, 401, 211, 41);
         add(jtf_stuDorm);
 
+        // 添加修改和重置按钮
         jb_enter = new JButton("修 改");
         jb_enter.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         jb_enter.setBounds(321, 401, 93, 41);
@@ -152,6 +160,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         jb_reset.setBounds(423, 401, 93, 41);
         add(jb_reset);
 
+        // 添加性别单选按钮
         ButtonGroup bg_stuGender = new ButtonGroup();
         jrb_man = new JRadioButton("男");
         jrb_man.setFont(new Font("微软雅黑", Font.PLAIN, 16));
@@ -165,6 +174,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         bg_stuGender.add(jrb_man);
         bg_stuGender.add(jrb_woman);
 
+        // 添加专业下拉框
         jcb_stuMajor = new JComboBox<>();
         jcb_stuMajor.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         jcb_stuMajor.addItem("请选择");
@@ -180,25 +190,30 @@ public class Modify_stu extends JPanel implements ActionListener {
         jcb_stuMajor.setBounds(100, 357, 211, 41);
         add(jcb_stuMajor);
 
+        // 添加分隔线
         JSeparator separator = new JSeparator();
         separator.setBounds(0, 101, 526, 13);
         add(separator);
 
+        // 为按钮添加动作监听器
         jb_enter.addActionListener(this);
         jb_reset.addActionListener(this);
         jb_search_enter.addActionListener(this);
         jb_search_reset.addActionListener(this);
         jb_upload.addActionListener(this);
 
-        searchStudentById(studentId); // 初始化时加载学生信息
+        // 初始化时加载学生信息
+        searchStudentById(studentId);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb_enter) {
+            // 修改学生信息
             updateStudentInfo();
         }
         if (e.getSource() == jb_reset) {
+            // 重置表单字段
             jtf_stuAge.setText("");
             jtf_stuDorm.setText("");
             jtf_stuName.setText("");
@@ -207,7 +222,7 @@ public class Modify_stu extends JPanel implements ActionListener {
             resetImage();
         }
         if (e.getSource() == jb_search_enter) {
-            // 实现搜索逻辑
+            // 搜索学生信息
             String studentId = jtf_num.getText().trim();
             if (studentId.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "请输入学号！", "提示", JOptionPane.INFORMATION_MESSAGE);
@@ -216,13 +231,16 @@ public class Modify_stu extends JPanel implements ActionListener {
             searchStudentById(studentId);
         }
         if (e.getSource() == jb_search_reset) {
+            // 重置搜索框
             jtf_num.setText("");
         }
         if (e.getSource() == jb_upload) {
+            // 上传图片
             uploadImage();
         }
     }
 
+    // 根据学号搜索学生信息
     private void searchStudentById(String studentId) {
         try (Connection conn = DBConfig.getConnection()) {
             String sql = "SELECT * FROM students WHERE student_id = ?";
@@ -230,6 +248,7 @@ public class Modify_stu extends JPanel implements ActionListener {
             pstmt.setString(1, studentId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
+                // 填充表单字段
                 jtf_stuNum.setText(rs.getString("student_id"));
                 jtf_stuName.setText(rs.getString("name"));
                 if (rs.getString("gender").equals("男")) {
@@ -242,6 +261,7 @@ public class Modify_stu extends JPanel implements ActionListener {
                 jcb_stuMajor.setSelectedItem(rs.getString("major"));
                 jtf_stuDorm.setText(rs.getString("dormitory"));
 
+                // 加载头像
                 originalAvatarBytes = rs.getBytes("avatar");
                 if (originalAvatarBytes != null) {
                     ByteArrayInputStream bais = new ByteArrayInputStream(originalAvatarBytes);
@@ -261,6 +281,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         }
     }
 
+    // 上传图片
     private void uploadImage() {
         JFileChooser fileChooser = new JFileChooser();
         int returnValue = fileChooser.showOpenDialog(null);
@@ -278,6 +299,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         }
     }
 
+    // 重置图片为默认图片
     private void resetImage() {
         try {
             BufferedImage defaultImage = ImageIO.read(new File("src/main/resources/Img/Add_Stu/menu-user.png"));
@@ -289,6 +311,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         }
     }
 
+    // 更新学生信息
     public void updateStudentInfo() {
         String studentId = jtf_stuNum.getText().trim();
         String name = jtf_stuName.getText().trim();
@@ -299,6 +322,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         String dormitory = jtf_stuDorm.getText().trim();
         byte[] avatarBytes = null;
 
+        // 处理上传的图片
         if (selectedImageFile != null) {
             try {
                 BufferedImage bufferedImage = ImageIO.read(selectedImageFile);
@@ -316,6 +340,7 @@ public class Modify_stu extends JPanel implements ActionListener {
             avatarBytes = originalAvatarBytes;
         }
 
+        // 更新学生信息到数据库
         try (Connection conn = DBConfig.getConnection()) {
             String sql = "UPDATE students SET name = ?, gender = ?, birthdate = ?, age = ?, major = ?, dormitory = ?, avatar = ? WHERE student_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -346,6 +371,7 @@ public class Modify_stu extends JPanel implements ActionListener {
         }
     }
 
+    // 刷新表格的监听器接口
     public interface RefreshTableListener {
         void refreshTable();
     }

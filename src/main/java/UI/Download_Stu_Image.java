@@ -1,7 +1,7 @@
 package UI;
 
+// 导入必要的类
 import sql.DBConfig;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class Download_Stu_Image extends JPanel implements ActionListener {
+    // 定义表单字段和按钮
     private final JTextField jtf_num;
     private final JButton jb_search, jb_download;
     private JLabel jl_image;
@@ -24,15 +25,18 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
     // 不可修改的显示框
     private final JTextField jtf_display_name, jtf_display_birthdate, jtf_display_age, jtf_display_major, jtf_display_dormitory;
 
+    // 构造函数，初始化面板和组件
     public Download_Stu_Image() {
         setSize(526, 600);
         setLayout(null);
 
+        // 添加标题标签
         JLabel jl_title = new JLabel("保存学生图片");
         jl_title.setFont(new Font("微软雅黑", Font.PLAIN, 26));
         jl_title.setBounds(167, 10, 200, 34);
         add(jl_title);
 
+        // 添加学号标签和文本框
         JLabel jl_num = new JLabel("学 号");
         jl_num.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         jl_num.setBounds(10, 55, 79, 36);
@@ -43,6 +47,7 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
         add(jtf_num);
         jtf_num.setColumns(10);
 
+        // 添加搜索按钮
         jb_search = new JButton("搜 索");
         jb_search.setFont(new Font("微软雅黑", Font.PLAIN, 16));
         jb_search.setBounds(320, 53, 93, 41);
@@ -111,6 +116,7 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
         jtf_display_dormitory.setEditable(false);
         add(jtf_display_dormitory);
 
+        // 为按钮添加动作监听器
         jb_search.addActionListener(this);
         jb_download.addActionListener(this);
     }
@@ -118,12 +124,15 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == jb_search) {
+            // 处理搜索按钮点击事件
             searchStudentById();
         } else if (e.getSource() == jb_download) {
+            // 处理下载图片按钮点击事件
             downloadImage();
         }
     }
 
+    // 按学号搜索学生信息的方法
     private void searchStudentById() {
         String studentId = jtf_num.getText().trim();
         if (studentId.isEmpty()) {
@@ -164,6 +173,7 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
         }
     }
 
+    // 下载头像图片的方法
     private void downloadImage() {
         if (currentImage == null) {
             JOptionPane.showMessageDialog(this, "请先搜索学生信息！", "提示", JOptionPane.INFORMATION_MESSAGE);
@@ -185,6 +195,7 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
         }
     }
 
+    // 重置图片和显示框的方法
     private void resetImage() {
         currentImage = null;
         jl_image.setIcon(null);
@@ -194,5 +205,4 @@ public class Download_Stu_Image extends JPanel implements ActionListener {
         jtf_display_major.setText("");
         jtf_display_dormitory.setText("");
     }
-
 }

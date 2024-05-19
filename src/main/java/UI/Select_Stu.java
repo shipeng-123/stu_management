@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Select_Stu extends JPanel implements ActionListener {
+    // 定义组件
     private final JTable table;
     private final JTextField jtf_id, jtf_name, jft_go;
     private final JLabel jl_gong;
@@ -29,14 +30,16 @@ public class Select_Stu extends JPanel implements ActionListener {
     private final JButton jb_last;
     private static final String[] columnNames = { "头像", "学号", "姓名", "性别", "生日", "年龄", "系别", "宿舍" };
 
-    private int currentPage = 1;
-    private int totalPage = 1;
-    private final int pageSize = 10;
+    private int currentPage = 1; // 当前页
+    private int totalPage = 1; // 总页数
+    private final int pageSize = 10; // 每页显示记录数
     private AvatarRefresher Ava_RF= new AvatarRefresher();
+
+    // 构造函数，初始化面板和组件
     public Select_Stu() {
         setLayout(null);
         setSize(900, 700); // 增加界面大小
-        Ava_RF.refreshDatabase();
+        Ava_RF.refreshDatabase(); // 刷新数据库
         JLabel jl_title = new JLabel("学生信息查询");
         jl_title.setFont(new Font("微软雅黑", Font.PLAIN, 26));
         jl_title.setBounds(300, 10, 200, 34);
@@ -59,18 +62,20 @@ public class Select_Stu extends JPanel implements ActionListener {
         };
 
         table = new JTable(stuTable);
-        setWidth();
+        setWidth(); // 设置列宽
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // 允许单行选择
 
         JScrollPane line = new JScrollPane(table);
         line.setBounds(20, 150, 850, 400); // 调整表格大小和位置
         add(line);
 
+        // 添加学号标签和文本框
         JLabel jl_id = new JLabel("学 号");
-        jl_id.setFont(new Font("微软雅黑", Font.PLAIN, 18)); // 增加字体大小
-        jl_id.setBounds(30, 80, 60, 30); // 调整位置和大小
+        jl_id.setFont(new Font("微软雅黑", Font.PLAIN, 18));
+        jl_id.setBounds(30, 80, 60, 30);
         add(jl_id);
 
+        // 添加姓名标签和文本框
         JLabel jl_name = new JLabel("姓 名");
         jl_name.setBounds(300, 80, 60, 30);
         jl_name.setFont(new Font("微软雅黑", Font.PLAIN, 18));
@@ -86,47 +91,55 @@ public class Select_Stu extends JPanel implements ActionListener {
         jtf_name.setBounds(370, 80, 150, 30);
         add(jtf_name);
 
+        // 添加搜索按钮
         jb_search = new JButton("搜 索");
         jb_search.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_search.setBounds(550, 80, 100, 30);
         jb_search.addActionListener(this);
         add(jb_search);
 
+        // 添加首页按钮
         jb_first = new JButton("首页");
         jb_first.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_first.setBounds(20, 560, 80, 30);
         jb_first.addActionListener(this);
         add(jb_first);
 
+        // 添加上一页按钮
         jb_up = new JButton("上页");
         jb_up.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_up.setBounds(120, 560, 80, 30);
         jb_up.addActionListener(this);
         add(jb_up);
 
+        // 添加下一页按钮
         jb_down = new JButton("下页");
         jb_down.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_down.setBounds(220, 560, 80, 30);
         jb_down.addActionListener(this);
         add(jb_down);
 
+        // 添加尾页按钮
         jb_last = new JButton("尾页");
         jb_last.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_last.setBounds(320, 560, 80, 30);
         jb_last.addActionListener(this);
         add(jb_last);
 
+        // 添加跳转页数输入框
         jft_go = new JTextField();
         jft_go.setBounds(610, 560, 40, 30);
         add(jft_go);
         jft_go.setColumns(10);
 
+        // 添加跳转按钮
         jb_jump = new JButton("跳转");
         jb_jump.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_jump.setBounds(670, 560, 80, 30);
         jb_jump.addActionListener(this);
         add(jb_jump);
 
+        // 添加页数显示标签
         JLabel jl_di = new JLabel("第");
         jl_di.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jl_di.setBounds(590, 560, 20, 30);
@@ -142,12 +155,14 @@ public class Select_Stu extends JPanel implements ActionListener {
         jl_gong.setBounds(420, 560, 200, 30);
         add(jl_gong);
 
+        // 添加编辑按钮
         jb_edit = new JButton("编辑");
         jb_edit.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_edit.setBounds(640, 600, 80, 30);
         jb_edit.setEnabled(false);
         add(jb_edit);
 
+        // 添加删除按钮
         jb_delete = new JButton("删除");
         jb_delete.setFont(new Font("微软雅黑", Font.PLAIN, 18));
         jb_delete.setBounds(740, 600, 80, 30);
@@ -175,6 +190,7 @@ public class Select_Stu extends JPanel implements ActionListener {
         refreshTable();
     }
 
+    // 设置表格列宽
     private void setWidth() {
         table.setRowHeight(40);
         table.getColumnModel().getColumn(0).setPreferredWidth(80);
@@ -188,6 +204,7 @@ public class Select_Stu extends JPanel implements ActionListener {
         table.setRowSelectionAllowed(true);
     }
 
+    // 获取学生信息数据
     private List<Object[]> fetchData(String studentId, String studentName, int page) {
         List<Object[]> data = new ArrayList<>();
         String sql = "SELECT student_id, name, gender, birthdate, age, major, dormitory, avatar FROM students " +
@@ -231,6 +248,7 @@ public class Select_Stu extends JPanel implements ActionListener {
         return data;
     }
 
+    // 获取总页数
     private int getTotalPage(String studentId, String studentName) {
         int total = 0;
         String sql = "SELECT COUNT(*) FROM students WHERE student_id LIKE ? AND name LIKE ?";
@@ -251,6 +269,7 @@ public class Select_Stu extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // 根据按钮点击执行相应操作
         if (e.getSource() == jb_search) {
             currentPage = 1;
             refreshTable();
@@ -313,6 +332,7 @@ public class Select_Stu extends JPanel implements ActionListener {
         }
     }
 
+    // 删除学生信息
     private void deleteStudent(String studentId) {
         try (Connection conn = DBConfig.getConnection()) {
             String sql = "DELETE FROM students WHERE student_id = ?";
@@ -331,6 +351,7 @@ public class Select_Stu extends JPanel implements ActionListener {
         }
     }
 
+    // 刷新表格
     private void refreshTable() {
         String studentId = jtf_id.getText();
         String studentName = jtf_name.getText();
@@ -338,11 +359,9 @@ public class Select_Stu extends JPanel implements ActionListener {
         List<Object[]> data = fetchData(studentId, studentName, currentPage);
         Object[][] dataArray = data.toArray(new Object[0][]);
         stuTable.setDataVector(dataArray, columnNames);
-        setWidth();
+        setWidth(); // 重新设置列宽
         jl_gong.setText("当前第 " + currentPage + " 页 共 " + totalPage + " 页");
         revalidate();
         repaint();
     }
-
-
 }
