@@ -167,6 +167,7 @@ public class LoginJFrame extends JFrame implements ActionListener, MouseListener
                 this.dispose(); // 关闭当前界面
             } else {
                 JOptionPane.showMessageDialog(this, "用户名或密码错误");
+                init_CAPTCHA_str();
             }
         }
     }

@@ -372,6 +372,7 @@ public class Modify_stu extends JPanel implements ActionListener {
     }
 
     // 刷新表格的监听器接口
+
     public interface RefreshTableListener {
         void refreshTable();
     }

@@ -75,6 +75,7 @@ public class Menu_JFrame extends JFrame implements ActionListener {
         jb_select.addActionListener(this);
         jb_exit.addActionListener(this);
         this.setResizable(false); // 设置窗口不可调整大小
+
     }
 
     @Override
