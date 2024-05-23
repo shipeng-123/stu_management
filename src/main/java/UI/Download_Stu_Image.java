@@ -1,7 +1,9 @@
 package UI;
 
 // 导入必要的类
+
 import sql.DBConfig;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

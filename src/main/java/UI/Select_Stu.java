@@ -28,12 +28,12 @@ public class Select_Stu extends JPanel implements ActionListener {
     private final JButton jb_first, jb_up, jb_down, jb_search, jb_jump, jb_edit, jb_delete;
     private final DefaultTableModel stuTable;
     private final JButton jb_last;
-    private static final String[] columnNames = { "头像", "学号", "姓名", "性别", "生日", "年龄", "系别", "宿舍" };
+    private static final String[] columnNames = {"头像", "学号", "姓名", "性别", "生日", "年龄", "系别", "宿舍"};
 
     private int currentPage = 1; // 当前页
     private int totalPage = 1; // 总页数
     private final int pageSize = 10; // 每页显示记录数
-    private AvatarRefresher Ava_RF= new AvatarRefresher();
+    private AvatarRefresher Ava_RF = new AvatarRefresher();
 
     // 构造函数，初始化面板和组件
     public Select_Stu() {
